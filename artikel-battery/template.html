@@ -1,0 +1,78 @@
+<!--
+    ════════════════════════════════════════════════════════
+    VOLTLEAN — TEMPLATE ARTIKEL
+    ════════════════════════════════════════════════════════
+
+    CARA MEMBUAT ARTIKEL BARU:
+    1. Duplikat file ini, simpan di folder artikel/
+       Contoh: artikel/nama-topik-anda.html
+    2. Edit konten di bawah ini (header, gambar, body, dll.)
+    3. Daftarkan artikel di array postsData dalam index.html:
+       {
+           id: 8,                          ← id unik, lanjutkan dari terakhir
+           featured: false,                ← true = muncul di Sorotan
+           category: "Baterai",            ← "Baterai" atau "Lean"
+           image: "URL_GAMBAR_THUMBNAIL",
+           title: "Judul Artikel",
+           excerpt: "Ringkasan singkat...",
+           file: "artikel/nama-file.html"  ← path ke file ini
+       }
+
+    CATATAN:
+    - File ini HANYA berisi konten artikel, tanpa tag <html>/<head>/<body>
+    - Gambar boleh URL eksternal atau path relatif dari root
+    - Styling sudah dihandle oleh index.html, tidak perlu tambah CSS
+    ════════════════════════════════════════════════════════
+-->
+
+<!-- ① HEADER: badge kategori, judul, meta info -->
+<div class="article-header">
+    <span class="badge" style="background: var(--accent-color); color: #0f172a;">Baterai</span>
+    <!-- Untuk kategori Lean, ganti warnanya: style="background: #3b82f6; color: #0f172a;" -->
+
+    <h1>Judul Artikel di Sini</h1>
+
+    <div class="article-meta">
+        <i class="far fa-calendar"></i> 15 April 2026 &nbsp;•&nbsp;
+        <i class="far fa-clock"></i> 8 menit baca
+    </div>
+</div>
+
+<!-- ② GAMBAR COVER -->
+<img
+    src="https://images.unsplash.com/photo-1620061559868-8094236a287b?w=1000&q=80"
+    class="article-cover"
+    alt="Deskripsi gambar cover"
+>
+
+<!-- ③ BODY ARTIKEL -->
+<div class="article-body">
+
+    <p>
+        Paragraf pembuka. Tulis hook yang menarik agar pembaca ingin terus membaca.
+    </p>
+
+    <p>
+        Paragraf berikutnya. Mulai jelaskan topik secara bertahap.
+    </p>
+
+    <p>
+        Lanjutkan dengan konten utama artikel. Bisa tambah sub-judul dengan tag &lt;h2&gt;
+        atau list dengan &lt;ul&gt;/&lt;li&gt; jika diperlukan.
+    </p>
+
+    <p>
+        Paragraf penutup. Rangkum insight utama atau tambahkan refleksi pribadi.
+    </p>
+
+</div>
+
+<!-- ④ BOX DOWNLOAD PPT (opsional — hapus blok ini jika tidak ada file PPT) -->
+<div class="ppt-box">
+    <i class="fas fa-file-powerpoint fa-3x" style="color: #d24726;"></i>
+    <h3 style="margin: 10px 0;">Materi Presentasi PPT</h3>
+    <p>Dapatkan detail teknis dan diagram dalam slide presentasi.</p>
+    <a href="#" class="download-btn">
+        <i class="fas fa-download"></i> Download PPT (2.4 MB)
+    </a>
+</div>

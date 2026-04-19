@@ -1,0 +1,27 @@
+<!-- artikel/battery-management-system.html -->
+
+<div class="article-header">
+    <span class="badge" style="background: var(--accent-color); color: #0f172a;">Baterai</span>
+    <h1>Memahami Battery Management System (BMS)</h1>
+    <div class="article-meta">
+        <i class="far fa-calendar"></i> 5 April 2026 &nbsp;•&nbsp;
+        <i class="far fa-clock"></i> 7 menit baca
+    </div>
+</div>
+
+<img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=1000&q=80" class="article-cover" alt="Battery Management System">
+
+<div class="article-body">
+    <p>Bayangkan paket baterai 100 kWh dengan ratusan sel lithium-ion tersusun seri dan paralel. Tanpa pengawas yang cerdas, satu sel yang "berperilaku" berbeda bisa merusak keseluruhan sistem. BMS adalah pengawas itu.</p>
+    <p>Fungsi utamanya: memantau voltase setiap sel, suhu, dan arus secara real-time; memutus sirkuit saat terjadi kondisi berbahaya; menyamakan kapasitas antar sel (balancing); menghitung SOC dan SOH; serta melaporkan data ke sistem kontrol kendaraan via CAN bus.</p>
+    <p>SOC (State of Charge) adalah persentase energi saat ini — seperti indikator bensin. SOH (State of Health) adalah kondisi baterai relatif terhadap kondisi baru. SOH 80% artinya baterai hanya mampu menyimpan 80% kapasitas awalnya. Mengukur SOH secara akurat adalah tantangan besar karena degradasi terjadi secara non-linear.</p>
+    <p>Passive balancing membuang energi berlebih sebagai panas — murah tapi boros. Active balancing memindahkan energi antar sel menggunakan induktor — lebih efisien tapi kompleks. Untuk EV atau grid storage, active balancing adalah pilihan yang lebih tepat.</p>
+    <p>BMS generasi terbaru mulai mengintegrasikan kemampuan prediktif berbasis AI untuk memprediksi kegagalan sel, mengoptimalkan strategi charging, dan beradaptasi dengan pola penggunaan. Cloud-connected BMS memungkinkan over-the-air update dan fleet monitoring skala besar.</p>
+</div>
+
+<div class="ppt-box">
+    <i class="fas fa-file-powerpoint fa-3x" style="color: #d24726;"></i>
+    <h3 style="margin: 10px 0;">Materi Presentasi PPT</h3>
+    <p>Diagram arsitektur BMS, flowchart algoritma balancing, dan perbandingan topologi.</p>
+    <a href="#" class="download-btn"><i class="fas fa-download"></i> Download PPT (3.1 MB)</a>
+</div>

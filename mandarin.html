@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HànZì Notes | Jurnal Belajar Mandarin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ─── CSS Variables & Theme ─── */
+        :root {
+            --bg-color: #fdf8f5;
+            --surface-color: #ffffff;
+            --text-main: #1a0a00;
+            --text-muted: #7c6355;
+            --accent-color: #c0392b;
+            --accent-hover: #96281b;
+            --accent-secondary: #e67e22;
+            --border-color: #ecddd5;
+            --card-shadow: 0 4px 15px rgba(192, 57, 43, 0.07);
+            --glow-color: rgba(192, 57, 43, 0);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1c0f0a;
+            --surface-color: #2c1810;
+            --text-main: #fdf3ee;
+            --text-muted: #b08070;
+            --accent-color: #e74c3c;
+            --accent-hover: #c0392b;
+            --accent-secondary: #e67e22;
+            --border-color: #4a2218;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            --glow-color: rgba(231, 76, 60, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; scroll-behavior: smooth; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+
+        /* ─── Progress Bar ─── */
+        .progress-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: transparent; z-index: 1002; }
+        .progress-bar { height: 100%; background: var(--accent-color); width: 0%; transition: width 0.1s ease-out; box-shadow: 0 0 10px var(--glow-color); }
+
+        /* ─── Reveal Animation ─── */
+        .reveal { opacity: 0; transform: translateY(40px) scale(0.95); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0) scale(1); }
+
+        /* ─── Back to Top ─── */
+        #backToTop {
+            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+            background: var(--accent-color); color: #fff; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 1.2rem;
+            cursor: pointer; box-shadow: 0 4px 15px var(--glow-color); z-index: 999;
+            opacity: 0; transform: translateY(100px) rotate(180deg);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none;
+        }
+        #backToTop.visible { opacity: 1; transform: translateY(0) rotate(0deg); pointer-events: auto; }
+        #backToTop:hover { transform: translateY(-5px) scale(1.1); background: var(--accent-hover); box-shadow: 0 8px 25px var(--glow-color); }
+
+        /* ─── Navbar ─── */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: var(--surface-color); border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 5%;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .logo .hanzi-char { font-size: 1.6rem; line-height: 1; color: var(--accent-color); }
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { font-weight: 600; color: var(--text-muted); transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--accent-color); }
+        .nav-actions { display: flex; align-items: center; gap: 15px; }
+
+        .theme-switch { position: relative; width: 64px; height: 32px; background: var(--border-color); border-radius: 30px; cursor: pointer; display: flex; align-items: center; padding: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        .theme-slider { width: 24px; height: 24px; background: var(--surface-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .theme-slider i { font-size: 12px; color: #f59e0b; }
+        [data-theme="dark"] .theme-slider { transform: translateX(32px); background: #c0392b; }
+        [data-theme="dark"] .theme-slider i { color: #fff; }
+        .hamburger { display: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
+
+        /* ─── Container ─── */
+        .container { max-width: 1100px; margin: 64px auto 50px; padding: 0 60px; }
+        .scroll-section { scroll-margin-top: 100px; margin-bottom: 80px; }
+
+        /* ─── Hero ─── */
+        .hero {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 40px 20px 60px; min-height: auto; position: relative;
+        }
+        /* Karakter Hanzi dekoratif di background */
+        .hero-bg-char {
+            position: absolute; font-size: 22rem; font-weight: 700; color: var(--accent-color);
+            opacity: 0.05; user-select: none; pointer-events: none; z-index: 0;
+            line-height: 1; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+        .hero > *:not(.hero-bg-char) { position: relative; z-index: 1; }
+
+        .hero-badge { border: 1px solid var(--accent-color); color: var(--accent-color); padding: 8px 24px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; margin-bottom: 30px; background: rgba(192, 57, 43, 0.05); letter-spacing: 0.5px; }
+        .hero h1 { font-size: 4rem; margin-bottom: 25px; line-height: 1.2; font-weight: 700; letter-spacing: -1px; }
+        .hero h1 .typing-line { display: block; min-height: 1.25em; }
+        .hero h1 .highlight { color: var(--accent-color); text-shadow: 0 0 25px var(--glow-color); }
+        .typing-cursor { color: var(--accent-color); font-weight: 300; animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .hero-desc { color: var(--text-muted); font-size: 1.15rem; max-width: 700px; margin-bottom: 40px; line-height: 1.7; }
+        .hero-btn { background: var(--accent-color); color: #fff; padding: 14px 32px; border-radius: 10px; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 20px var(--glow-color); transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .hero-btn:hover { transform: translateY(-3px); background: var(--accent-hover); box-shadow: 0 6px 25px var(--glow-color); }
+
+        /* ─── HSK Progress Bar di Hero ─── */
+        .hsk-tracker {
+            display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; justify-content: center;
+        }
+        .hsk-pill {
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+            border: 1px solid var(--border-color); color: var(--text-muted);
+            background: var(--surface-color);
+        }
+        .hsk-pill.active {
+            background: var(--accent-color); color: #fff;
+            border-color: var(--accent-color); box-shadow: 0 2px 10px var(--glow-color);
+        }
+        .hsk-pill.current {
+            border-color: var(--accent-secondary); color: var(--accent-secondary);
+            background: rgba(230, 126, 34, 0.08);
+        }
+
+        /* ─── Section Titles ─── */
+        .section-title { font-size: 1.8rem; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; justify-content: flex-start; text-align: left; }
+        .filter-group { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: flex-start; }
+        #contact .section-title { justify-content: center; text-align: center; }
+
+        .icon-fire { color: #e74c3c; filter: drop-shadow(0 0 8px rgba(231, 76, 60, 0.5)); font-size: 1.9rem; }
+        .icon-book { color: var(--accent-color); filter: drop-shadow(0 0 8px var(--glow-color)); font-size: 1.9rem; }
+        .icon-envelope { color: var(--accent-secondary); filter: drop-shadow(0 0 8px rgba(230, 126, 34, 0.5)); }
+
+        /* ─── Featured Grid ─── */
+        .featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .featured-card { background: var(--surface-color); border-radius: 15px; border: 1px solid var(--border-color); overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; position: relative; box-shadow: var(--card-shadow); }
+        .featured-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(192,57,43,0.15); }
+        .featured-img { width: 100%; height: 180px; object-fit: cover; }
+        .featured-content { padding: 20px; }
+        .badge { background: var(--accent-color); color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; display: inline-block; }
+
+        /* ─── Filter & Cards ─── */
+        .filter-btn { background: var(--surface-color); color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px 20px; border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .filter-btn:hover { background: var(--border-color); color: var(--text-main); }
+        .filter-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); box-shadow: 0 4px 15px var(--glow-color); }
+
+        .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        .card { background: var(--surface-color); border-radius: 15px; border: 1px solid var(--border-color); overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-5px); box-shadow: var(--card-shadow); }
+        .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
+        .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-body h3 { margin: 10px 0; font-size: 1.2rem; line-height: 1.4; }
+        .card-body p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; flex-grow: 1; }
+        .read-more { font-weight: 600; font-size: 0.9rem; color: var(--accent-color); display: flex; align-items: center; gap: 5px; }
+        .read-more i { transition: transform 0.3s; }
+        .card:hover .read-more i { transform: translateX(5px); }
+
+        /* ─── Pagination ─── */
+        .pagination { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 40px; flex-wrap: wrap; }
+        .page-btn {
+            min-width: 40px; height: 40px; padding: 0 14px;
+            border-radius: 8px; border: 1px solid var(--border-color);
+            background: var(--surface-color); color: var(--text-muted);
+            font-weight: 600; font-size: 0.9rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+            transition: all 0.2s;
+        }
+        .page-btn:hover:not(:disabled) { background: var(--border-color); color: var(--text-main); }
+        .page-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); box-shadow: 0 4px 15px var(--glow-color); }
+        .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .hidden { display: none !important; }
+
+        /* ─── Article View ─── */
+        #article-view { display: none; max-width: 800px; margin: 0 auto; animation: fadeUp 0.5s ease-out; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); cursor: pointer; margin-bottom: 30px; font-weight: 600; padding: 10px 15px; border-radius: 8px; background: var(--surface-color); border: 1px solid var(--border-color); transition: 0.2s; }
+        .back-btn:hover { color: var(--text-main); background: var(--border-color); }
+        .article-header h1 { font-size: 2.5rem; margin: 15px 0; }
+        .article-meta { color: var(--text-muted); margin-bottom: 30px; font-size: 0.95rem; }
+        .article-cover { width: 100%; height: 400px; object-fit: cover; border-radius: 15px; margin-bottom: 30px; }
+        .article-body { font-size: 1.1rem; line-height: 1.8; color: var(--text-main); }
+        .article-body p { margin-bottom: 20px; }
+        .article-body h2 { font-size: 1.5rem; margin: 35px 0 15px; color: var(--accent-color); }
+        .article-body h3 { font-size: 1.2rem; margin: 25px 0 10px; }
+        .article-body ul, .article-body ol { margin: 0 0 20px 25px; }
+        .article-body li { margin-bottom: 8px; }
+
+        /* Kotak kosakata khas Mandarin */
+        .vocab-box {
+            margin: 30px 0; padding: 25px; background: var(--surface-color);
+            border: 1px solid var(--border-color); border-left: 4px solid var(--accent-color);
+            border-radius: 12px;
+        }
+        .vocab-box h4 { font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px; }
+        .vocab-row { display: flex; align-items: baseline; gap: 15px; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+        .vocab-row:last-child { border-bottom: none; }
+        .vocab-hanzi { font-size: 1.6rem; font-weight: 700; color: var(--accent-color); min-width: 50px; }
+        .vocab-pinyin { font-size: 0.95rem; color: var(--text-muted); min-width: 80px; }
+        .vocab-arti { font-size: 1rem; color: var(--text-main); }
+
+        .ppt-box { margin-top: 40px; padding: 25px; background: var(--surface-color); border: 2px dashed var(--accent-color); border-radius: 12px; text-align: center; }
+        .download-btn { display: inline-block; background: var(--accent-color); color: #fff; padding: 12px 25px; border-radius: 8px; font-weight: 700; margin-top: 15px; transition: 0.2s; }
+        .download-btn:hover { background: var(--accent-hover); }
+
+        .article-loading { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .article-loading i { font-size: 2rem; margin-bottom: 12px; display: block; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── Contact ─── */
+        #contact { padding: 60px; background: var(--surface-color); border-radius: 20px; text-align: center; border: 1px solid var(--border-color); }
+        .contact-form { max-width: 500px; margin: 30px auto 0; display: flex; flex-direction: column; gap: 15px; }
+        input, textarea { padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-family: inherit; }
+        input:focus, textarea:focus { outline: none; border-color: var(--accent-color); }
+        .btn-primary { background: var(--accent-color); color: #fff; border: none; padding: 12px 30px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; transition: background 0.3s; }
+        .btn-primary:hover { background: var(--accent-hover); }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 1024px) {
+            .container { padding: 0 40px; }
+            .featured-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 24px; }
+            .section-title { justify-content: center; text-align: center; }
+            .filter-group { justify-content: center; }
+            .progress-container { display: block; }
+            .hamburger { display: block; }
+            .nav-links {
+                position: absolute; top: 100%; left: 0; width: 100%;
+                background: var(--surface-color); flex-direction: column;
+                border-bottom: 1px solid var(--border-color);
+                max-height: 0; overflow: hidden;
+                transition: max-height 0.35s ease-in-out, padding 0.35s ease-in-out;
+                padding-top: 0; padding-bottom: 0;
+            }
+            .nav-links.active { max-height: 300px; padding-top: 20px; padding-bottom: 20px; }
+            html, body { overflow-x: hidden; width: 100%; }
+            .hero { padding: 40px 0 60px; min-height: auto; }
+            .hero h1 { font-size: 2.2rem; }
+            .hero h1 .typing-line { min-height: 1.3em; }
+            .hero-desc { font-size: 1rem; }
+            .hero-bg-char { font-size: 12rem; }
+            .featured-grid { grid-template-columns: 1fr; }
+            .blog-grid { grid-template-columns: 1fr; }
+            .article-cover { height: 220px; }
+            .article-header h1 { font-size: 1.8rem; }
+            #contact { padding: 36px 20px; }
+            #backToTop { bottom: 20px; right: 20px; width: 44px; height: 44px; font-size: 1rem; }
+            .card, .featured-card { width: 100%; min-width: 0; }
+            .page-btn { min-width: 36px; height: 36px; font-size: 0.85rem; padding: 0 10px; }
+            .vocab-row { flex-wrap: wrap; gap: 8px; }
+        }
+
+        @media (max-width: 400px) {
+            .hero h1 { font-size: 1.8rem; }
+            .container { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="progress-container">
+        <div class="progress-bar" id="scrollProgress"></div>
+    </div>
+
+    <div id="backToTop" onclick="scrollToTop()" title="Kembali ke Atas">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <nav>
+        <div class="logo" onclick="showHome()">
+            <span class="hanzi-char">汉</span> HànZì Notes
+        </div>
+
+        <div class="nav-links" id="navLinks">
+            <a href="#home"         class="nav-item active" data-target="home"         onclick="handleNavClick(event, 'home')">Beranda</a>
+            <a href="#featured"     class="nav-item"        data-target="featured"     onclick="handleNavClick(event, 'featured')">Sorotan</a>
+            <a href="#all-articles" class="nav-item"        data-target="all-articles" onclick="handleNavClick(event, 'all-articles')">Artikel</a>
+            <a href="#contact"      class="nav-item"        data-target="contact"      onclick="handleNavClick(event, 'contact')">Kontak</a>
+        </div>
+
+        <div class="nav-actions">
+            <div class="theme-switch" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                <div class="theme-slider" id="theme-icon">
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+            <div class="hamburger" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="home-view">
+
+            <header class="hero scroll-section reveal" id="home">
+                <div class="hero-bg-char">字</div>
+                <div class="hero-badge">Otodidak dari Nol | HSK Journey</div>
+                <h1>Belajar Mandarin <span class="typing-line"><span class="highlight" id="typing-text"></span><span class="typing-cursor">|</span></span></h1>
+                <p class="hero-desc">
+                    Jurnal perjalanan saya mempelajari bahasa Mandarin dari nol secara otodidak.
+                    Dari hanzi pertama hingga kalimat pertama — semuanya didokumentasikan di sini.
+                    <br>一步一步地学习。Belajar selangkah demi selangkah.
+                </p>
+
+                <!-- Tracker HSK Level -->
+                <div class="hsk-tracker">
+                    <div class="hsk-pill active">HSK 1 ✓</div>
+                    <div class="hsk-pill active">HSK 2 ✓</div>
+                    <div class="hsk-pill current">HSK 3 →</div>
+                    <div class="hsk-pill">HSK 4</div>
+                    <div class="hsk-pill">HSK 5</div>
+                    <div class="hsk-pill">HSK 6</div>
+                </div>
+
+                <a href="#featured" class="hero-btn" style="margin-top: 30px;" onclick="event.preventDefault(); scrollToSection('featured')">
+                    Mulai Membaca <i class="fas fa-arrow-down" style="font-size: 0.9em; margin-left: 3px;"></i>
+                </a>
+            </header>
+
+            <section id="featured" class="scroll-section reveal">
+                <h2 class="section-title"><i class="fa-solid fa-fire-flame-curved icon-fire"></i> Sorotan</h2>
+                <div class="featured-grid" id="featured-posts"></div>
+            </section>
+
+            <section id="all-articles" class="scroll-section reveal">
+                <h2 class="section-title"><i class="fa-solid fa-book-bookmark icon-book"></i> Artikel</h2>
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="setFilter('Semua')">Semua</button>
+                    <button class="filter-btn" onclick="setFilter('Hanzi')">Hanzi & Karakter</button>
+                    <button class="filter-btn" onclick="setFilter('Tata Bahasa')">Tata Bahasa</button>
+                    <button class="filter-btn" onclick="setFilter('Kosakata')">Kosakata</button>
+                    <button class="filter-btn" onclick="setFilter('Budaya')">Budaya</button>
+                </div>
+                <div class="blog-grid" id="all-posts"></div>
+                <div class="pagination" id="pagination"></div>
+            </section>
+
+            <section id="contact" class="scroll-section reveal">
+                <h2 class="section-title"><i class="fa-solid fa-paper-plane icon-envelope"></i> Mari Berdiskusi</h2>
+                <p style="color: var(--text-muted); margin-top: -10px;">Sesama pelajar bahasa Mandarin? Atau punya tips belajar? Yuk ngobrol!</p>
+                <form class="contact-form" onsubmit="event.preventDefault(); alert('Pesan berhasil dikirim! 谢谢！');">
+                    <input type="text" placeholder="Nama Anda" required>
+                    <input type="email" placeholder="Email Anda" required>
+                    <textarea rows="4" placeholder="Pesan, pertanyaan, atau rekomendasi resource belajar..." required></textarea>
+                    <button type="submit" class="btn-primary">Kirim Pesan <i class="fas fa-paper-plane" style="margin-left:5px;"></i></button>
+                </form>
+            </section>
+        </div>
+
+        <div id="article-view">
+            <button class="back-btn" onclick="goBackToJournal()"><i class="fas fa-arrow-left"></i> Kembali</button>
+            <article id="article-content"></article>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 50px;" class="reveal">
+        <p>&copy; 2026 HànZì Notes &nbsp;·&nbsp; <i>学无止境 — Belajar tiada akhir.</i></p>
+    </footer>
+
+    <script>
+        // ─────────────────────────────────────────────────────────────────────────
+        // DATA CATATAN
+        // Untuk menambah catatan baru:
+        //   1. Buat file HTML di folder artikel-mandarin/ (contoh: artikel-mandarin/judul-baru.html)
+        //   2. Tambahkan entry baru di array postsData di bawah ini
+        //   3. Category: "Hanzi", "Tata Bahasa", "Kosakata", atau "Budaya"
+        // ─────────────────────────────────────────────────────────────────────────
+        const postsData = [
+            {
+                id: 1,
+                featured: true,
+                category: "Hanzi",
+                image: "https://images.unsplash.com/photo-1547190027-9156686aa2f0?w=600&q=80",
+                title: "Cara Belajar Hanzi dari Nol",
+                excerpt: "Strategi menghafal karakter Mandarin dengan metode radikal dan mnemonik visual.",
+                file: "artikel-mandarin/belajar-hanzi-dari-nol.html"
+            },
+            {
+                id: 2,
+                featured: true,
+                category: "Tata Bahasa",
+                image: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80",
+                title: "Pola Kalimat Dasar Mandarin",
+                excerpt: "Memahami struktur S-V-O dan partikel dasar yang sering muncul di HSK 1-2.",
+                file: "artikel-mandarin/pola-kalimat-dasar.html"
+            },
+            {
+                id: 3,
+                featured: true,
+                category: "Budaya",
+                image: "https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=600&q=80",
+                title: "Budaya di Balik Karakter 福",
+                excerpt: "Mengapa satu karakter bisa membawa begitu banyak makna budaya dan filosofi.",
+                file: "artikel-mandarin/budaya-karakter-fu.html"
+            },
+            {
+                id: 4,
+                featured: false,
+                category: "Kosakata",
+                image: "https://images.unsplash.com/photo-1547674506-cc7820de6c26?w=600&q=80",
+                title: "100 Kata Pertama yang Harus Dikuasai",
+                excerpt: "Daftar kosakata HSK 1 beserta cara mudah mengingatnya dalam konteks.",
+                file: "artikel-mandarin/100-kata-pertama.html"
+            },
+            {
+                id: 5,
+                featured: false,
+                category: "Hanzi",
+                image: "https://images.unsplash.com/photo-1547190027-9156686aa2f0?w=600&q=80",
+                title: "Radikal: Kunci Membaca Hanzi",
+                excerpt: "Bagaimana 214 radikal dasar membantu menebak arti ratusan karakter baru.",
+                file: "artikel-mandarin/radikal-hanzi.html"
+            },
+            {
+                id: 6,
+                featured: false,
+                category: "Tata Bahasa",
+                image: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80",
+                title: "Penggunaan 了 (le) yang Membingungkan",
+                excerpt: "Partikel 了 paling sering disalahartikan oleh pemula — ini penjelasan sederhananya.",
+                file: "artikel-mandarin/partikel-le.html"
+            },
+            {
+                id: 7,
+                featured: false,
+                category: "Budaya",
+                image: "https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=600&q=80",
+                title: "Mengapa Nada (Shēngdiào) Sangat Penting",
+                excerpt: "Kesalahan nada bisa mengubah arti kata secara total. Ini pengalaman pertama saya.",
+                file: "artikel-mandarin/nada-shengdiao.html"
+            }
+        ];
+
+        // ─── Intersection Observer ───
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+        function observeElements() {
+            document.querySelectorAll('.reveal').forEach(el => { revealObserver.observe(el); });
+        }
+
+        // ─── Typing Effect ───
+        const wordsToType = ["一步一步。", "Dengan Sabar.", "Setiap Hari."];
+        let wordIndex = 0, charIndex = 0, isDeleting = false;
+        const typingElement = document.getElementById("typing-text");
+
+        function typeWriter() {
+            const currentWord = wordsToType[wordIndex];
+            typingElement.textContent = isDeleting
+                ? currentWord.substring(0, charIndex - 1)
+                : currentWord.substring(0, charIndex + 1);
+            isDeleting ? charIndex-- : charIndex++;
+            let speed = isDeleting ? 75 : 150;
+            if (!isDeleting && charIndex === currentWord.length) { speed = 2000; isDeleting = true; }
+            else if (isDeleting && charIndex === 0) { isDeleting = false; wordIndex = (wordIndex + 1) % wordsToType.length; speed = 500; }
+            setTimeout(typeWriter, speed);
+        }
+
+        // ─── Scroll Logic ───
+        const sections = document.querySelectorAll('.scroll-section');
+        const navItems = document.querySelectorAll('.nav-item');
+        const progressBar = document.getElementById('scrollProgress');
+        const backToTopBtn = document.getElementById('backToTop');
+        let isArticleView = false;
+
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            if (window.innerWidth <= 768) progressBar.style.width = ((winScroll / height) * 100) + "%";
+            backToTopBtn.classList.toggle('visible', winScroll > 300);
+
+            if (!isArticleView) {
+                let current = '';
+                sections.forEach(s => { if (pageYOffset >= (s.offsetTop - 150)) current = s.getAttribute('id'); });
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('href') === `#${current}`) item.classList.add('active');
+                });
+            }
+        });
+
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
+
+        // ─── Nav Click (aktif di artikel view juga) ───
+        function handleNavClick(event, target) {
+            event.preventDefault();
+            closeMenu();
+            if (isArticleView) {
+                showHome();
+                setTimeout(() => {
+                    target === 'home' ? window.scrollTo({ top: 0, behavior: 'smooth' }) : scrollToSection(target);
+                }, 50);
+            } else {
+                target === 'home' ? window.scrollTo({ top: 0, behavior: 'smooth' }) : scrollToSection(target);
+            }
+        }
+
+        // ─── Badge color per category ───
+        const categoryColor = {
+            'Hanzi':       'var(--accent-color)',
+            'Tata Bahasa': '#8e44ad',
+            'Kosakata':    '#16a085',
+            'Budaya':      'var(--accent-secondary)'
+        };
+        function badgeStyle(cat) {
+            return `background: ${categoryColor[cat] || 'var(--accent-color)'}; color: #fff;`;
+        }
+
+        // ─── Render Featured ───
+        function renderFeatured() {
+            const container = document.getElementById('featured-posts');
+            container.innerHTML = postsData.filter(p => p.featured).slice(0, 3).map(post => `
+                <div class="featured-card reveal" onclick="openArticle(${post.id})">
+                    <img src="${post.image}" class="featured-img" alt="${post.title}">
+                    <div class="featured-content">
+                        <span class="badge" style="${badgeStyle(post.category)}">${post.category}</span>
+                        <h3 style="margin-bottom: 8px;">${post.title}</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">${post.excerpt}</p>
+                        <div class="read-more" style="margin-top: 15px;">Baca Catatan <i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            `).join('');
+            observeElements();
+        }
+
+        // ─── Pagination ───
+        const POSTS_PER_PAGE = 6;
+        let currentFilter = 'Semua', currentPage = 1;
+
+        function getFilteredPosts() {
+            return currentFilter === 'Semua' ? postsData : postsData.filter(p => p.category === currentFilter);
+        }
+
+        function renderAllPosts() {
+            const container = document.getElementById('all-posts');
+            const filtered = getFilteredPosts();
+            const totalPages = Math.ceil(filtered.length / POSTS_PER_PAGE);
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            const pagePosts = filtered.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
+
+            container.innerHTML = pagePosts.map(post => `
+                <div class="card reveal" onclick="openArticle(${post.id})">
+                    <img src="${post.image}" alt="${post.title}">
+                    <div class="card-body">
+                        <span class="badge" style="${badgeStyle(post.category)}">${post.category}</span>
+                        <h3>${post.title}</h3>
+                        <p>${post.excerpt}</p>
+                        <div class="read-more">Baca Catatan <i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            `).join('');
+
+            renderPagination(totalPages);
+            observeElements();
+        }
+
+        function renderPagination(totalPages) {
+            const pag = document.getElementById('pagination');
+            if (totalPages <= 1) { pag.innerHTML = ''; return; }
+            let html = `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left" style="font-size:0.75rem;"></i>&nbsp;Prev</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next&nbsp;<i class="fas fa-chevron-right" style="font-size:0.75rem;"></i></button>`;
+            pag.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(getFilteredPosts().length / POSTS_PER_PAGE);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderAllPosts();
+            document.getElementById('all-articles').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setFilter(category) {
+            currentFilter = category; currentPage = 1;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.trim() === category ||
+                    (category === 'Semua' && btn.innerText.trim() === 'Semua'));
+            });
+            renderAllPosts();
+        }
+
+        // ─── Open Article ───
+        async function openArticle(id) {
+            const post = postsData.find(p => p.id === id);
+            if (!post) return;
+            isArticleView = true;
+            document.getElementById('home-view').style.display = 'none';
+            document.getElementById('article-view').style.display = 'block';
+            document.getElementById('article-content').innerHTML = `<div class="article-loading"><i class="fas fa-circle-notch"></i>Memuat catatan...</div>`;
+            window.scrollTo(0, 0);
+            navItems.forEach(item => item.classList.remove('active'));
+
+            try {
+                const res = await fetch(post.file);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                document.getElementById('article-content').innerHTML = await res.text();
+            } catch {
+                document.getElementById('article-content').innerHTML = `
+                    <div class="article-header">
+                        <span class="badge" style="${badgeStyle(post.category)}">${post.category}</span>
+                        <h1>${post.title}</h1>
+                        <div class="article-meta"><i class="far fa-calendar"></i> 2026</div>
+                    </div>
+                    <img src="${post.image}" class="article-cover" alt="${post.title}">
+                    <div class="article-body">
+                        <p>${post.excerpt}</p>
+                        <div class="ppt-box" style="border-color:var(--border-color);">
+                            <i class="fas fa-file-code fa-2x" style="color:var(--text-muted);"></i>
+                            <h3 style="margin:10px 0;">File belum tersedia</h3>
+                            <p>Buat file <code>${post.file}</code> menggunakan template yang sudah disediakan.</p>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        function showHome() {
+            isArticleView = false;
+            document.getElementById('home-view').style.display = 'block';
+            document.getElementById('article-view').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.dispatchEvent(new Event('scroll'));
+        }
+
+        function goBackToJournal() {
+            isArticleView = false;
+            document.getElementById('home-view').style.display = 'block';
+            document.getElementById('article-view').style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('all-articles').scrollIntoView({ behavior: 'smooth' });
+                window.dispatchEvent(new Event('scroll'));
+            }, 10);
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.querySelector('.theme-slider i').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }
+        function closeMenu() { document.getElementById('navLinks').classList.remove('active'); }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFeatured(); renderAllPosts(); typeWriter(); observeElements();
+        });
+    </script>
+</body>
+</html>

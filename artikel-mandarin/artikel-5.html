@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salam Dasar Sehari-hari | MandaNotes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color-1:#f8fafc; --bg-color-2:#eff6ff; --text-color:#0f172a; --primary:#2563eb; --primary-light:#60a5fa; --primary-hover:#1d4ed8; --card-bg:#ffffff; --nav-bg:rgba(255,255,255,0.85); --border:#e2e8f0; --meta-text:#64748b; --shadow-hover:0 20px 40px rgba(37,99,235,0.15); }
+        body.dark-mode { --bg-color-1:#0f172a; --bg-color-2:#172554; --text-color:#f8fafc; --primary:#3b82f6; --primary-light:#93c5fd; --primary-hover:#60a5fa; --card-bg:#1e293b; --nav-bg:rgba(15,23,42,0.85); --border:#334155; --meta-text:#94a3b8; --shadow-hover:0 20px 40px rgba(59,130,246,0.2); }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; scroll-behavior:smooth; }
+        body { background-color:var(--bg-color-1); color:var(--text-color); transition:background-color 0.5s ease,color 0.5s ease; line-height:1.6; overflow-x:hidden; }
+        .article-page { background-color:var(--bg-color-1); }
+
+        #scroll-progress { display:none; position:fixed; top:0; left:0; height:4px; background:linear-gradient(90deg,var(--primary),var(--primary-light)); z-index:1001; width:0%; border-radius:0 2px 2px 0; }
+        @media(max-width:768px){ #scroll-progress { display:block; } }
+
+        nav { position:fixed; top:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:1.2rem 5%; background:var(--nav-bg); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:1000; border-bottom:1px solid var(--border); transition:0.3s ease; }
+        .nav-brand { font-size:1.5rem; font-weight:800; letter-spacing:-0.5px; text-decoration:none; color:var(--text-color); }
+        .nav-brand span { background:linear-gradient(135deg,var(--primary),var(--primary-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .nav-right { display:flex; align-items:center; gap:2.5rem; }
+        .nav-links { display:flex; list-style:none; gap:2.5rem; }
+        .nav-link { text-decoration:none; color:var(--text-color); font-weight:600; position:relative; font-size:0.95rem; transition:color 0.3s; }
+        .nav-link::after { content:''; position:absolute; width:0; height:3px; bottom:-6px; left:0; background:linear-gradient(90deg,var(--primary),var(--primary-light)); transition:width 0.3s ease-in-out; border-radius:2px; }
+        .nav-link:hover { color:var(--primary); }
+        .nav-link:hover::after { width:100%; }
+
+        .theme-switch { position:relative; display:inline-block; width:64px; height:34px; }
+        .theme-switch input { opacity:0; width:0; height:0; }
+        .slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:var(--bg-color-1); border:2px solid var(--border); transition:.4s cubic-bezier(0.68,-0.55,0.265,1.55); border-radius:34px; display:flex; align-items:center; justify-content:space-between; padding:0 6px; box-shadow:inset 0 2px 4px rgba(0,0,0,0.05); }
+        .slider .icon { font-size:14px; z-index:1; }
+        .slider::before { position:absolute; content:""; height:24px; width:24px; left:3px; bottom:3px; background:linear-gradient(135deg,var(--primary),var(--primary-light)); transition:.4s cubic-bezier(0.68,-0.55,0.265,1.55); border-radius:50%; z-index:2; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+        input:checked + .slider::before { transform:translateX(30px); }
+
+        .hamburger { display:none; flex-direction:column; cursor:pointer; gap:6px; z-index:1001; }
+        .hamburger span { width:28px; height:3px; background-color:var(--text-color); transition:0.4s; border-radius:3px; }
+
+        /* Article layout */
+        .article-page { padding-top:100px; min-height:100vh; }
+        .article-container { max-width:800px; margin:0 auto; padding:2rem 5%; }
+
+        .btn-back { padding:0.8rem 1.6rem; border-radius:12px; font-weight:800; font-size:0.95rem; cursor:pointer; text-decoration:none; transition:all 0.3s ease; background:var(--card-bg); color:var(--text-color); border:1px solid var(--border); display:inline-block; margin-bottom:3rem; }
+        .btn-back:hover { border-color:var(--primary); color:var(--primary); }
+
+        #reader-title { font-size:3rem; margin-bottom:1rem; line-height:1.2; letter-spacing:-1px; }
+        .meta-text { color:var(--meta-text); margin-bottom:2.5rem; font-weight:600; display:flex; align-items:center; gap:10px; }
+        .meta-text svg { width:24px; height:24px; color:var(--primary); flex-shrink:0; }
+        .image-placeholder img { width:100%; border-radius:20px; margin-bottom:3rem; object-fit:cover; box-shadow:0 20px 40px rgba(0,0,0,0.1); }
+
+        .article-body { font-size:1.15rem; line-height:1.9; color:var(--text-color); }
+        .article-body h3 { margin:2.5rem 0 1rem; font-size:1.8rem; letter-spacing:-0.5px; }
+        .article-body p { margin-bottom:1.5rem; }
+        .article-body ul { padding-left:1.5rem; margin-bottom:1.5rem; }
+        .article-body li { margin-bottom:0.5rem; }
+
+        .divider { border:0; height:1px; background:linear-gradient(90deg,transparent,var(--border),transparent); margin:5rem 0; }
+        .related-title { font-size:1.8rem; margin-bottom:2rem; color:var(--text-color); }
+
+        /* Cards (for related articles) */
+        .card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:2.5rem; }
+        .card { background:var(--card-bg); border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); position:relative; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 4px 6px rgba(0,0,0,0.05); height:100%; text-decoration:none; }
+        .card:hover { transform:translateY(-10px); box-shadow:var(--shadow-hover); border-color:var(--primary-light); }
+        .card-cover { height:180px; background-color:#0b1120; background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px); background-size:20px 20px; position:relative; display:flex; align-items:center; justify-content:center; }
+        .card-tag-floating { position:absolute; top:15px; right:15px; border:1px solid rgba(96,165,250,0.4); color:var(--primary-light); padding:4px 12px; border-radius:4px; font-size:0.75rem; font-weight:600; letter-spacing:0.5px; background:rgba(11,17,32,0.5); }
+        .card-cover-icon svg { width:55px; height:55px; color:var(--primary-light); transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275); filter:drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+        .card:hover .card-cover-icon svg { transform:scale(1.15) translateY(-5px); color:#ffffff; }
+        .card-body { padding:25px; flex-grow:1; display:flex; flex-direction:column; }
+        .card-category { font-size:0.75rem; color:var(--primary); font-weight:800; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px; display:block; }
+        body.dark-mode .card-category { color:var(--primary-light); }
+        .card h3 { margin-bottom:15px; font-size:1.3rem; line-height:1.4; color:var(--text-color); }
+        .card p { color:var(--meta-text); font-size:0.95rem; line-height:1.6; margin:0; }
+        .card-action { margin-top:auto; padding-top:1.5rem; display:flex; justify-content:flex-end; font-weight:800; font-size:0.95rem; color:var(--primary); transition:color 0.3s; }
+        .card:hover .card-action { color:var(--primary-hover); }
+        body.dark-mode .card-action { color:var(--primary-light); }
+        body.dark-mode .card:hover .card-action { color:#ffffff; }
+
+        footer { text-align:center; padding:3rem; background:var(--bg-color-2); border-top:1px solid var(--border); color:var(--meta-text); font-weight:600; transition:background-color 0.5s ease; }
+
+        #scrollTopBtn { position:fixed; bottom:30px; right:30px; z-index:999; background:linear-gradient(135deg,var(--primary),var(--primary-light)); color:white; width:55px; height:55px; border-radius:50%; border:none; font-size:1.5rem; cursor:pointer; box-shadow:0 10px 20px rgba(37,99,235,0.3); opacity:0; transform:translateY(30px); visibility:hidden; transition:all 0.3s cubic-bezier(0.68,-0.55,0.265,1.55); display:flex; align-items:center; justify-content:center; }
+        #scrollTopBtn.show { opacity:1; transform:translateY(0); visibility:visible; }
+        #scrollTopBtn:hover { transform:translateY(-8px) scale(1.05); }
+
+        .fade-section { opacity:0; transform:translateY(60px) scale(0.95); transition:opacity 0.8s cubic-bezier(0.165,0.84,0.44,1),transform 0.8s cubic-bezier(0.165,0.84,0.44,1); }
+        .fade-section.visible { opacity:1; transform:translateY(0) scale(1); }
+
+        @media(max-width:768px){
+            .nav-right { gap:15px; }
+            .nav-links { position:absolute; top:100%; right:-100%; flex-direction:column; background:var(--nav-bg); width:100%; text-align:center; padding:2rem 0; transition:0.4s cubic-bezier(0.68,-0.55,0.265,1.55); backdrop-filter:blur(15px); border-bottom:1px solid var(--border); box-shadow:0 10px 20px rgba(0,0,0,0.1); }
+            .nav-links.active { right:0; }
+            .nav-links li { margin:1rem 0; }
+            .hamburger { display:flex; }
+            .hamburger.toggle span:nth-child(1) { transform:rotate(-45deg) translate(-5px,6px); }
+            .hamburger.toggle span:nth-child(2) { opacity:0; }
+            .hamburger.toggle span:nth-child(3) { transform:rotate(45deg) translate(-5px,-6px); }
+            #reader-title { font-size:2rem; }
+            #scrollTopBtn { bottom:20px; right:20px; width:45px; height:45px; font-size:1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div id="scroll-progress"></div>
+<nav>
+    <a href="index.html" class="nav-brand">Manda<span>Notes</span></a>
+    <div class="nav-right">
+        <ul class="nav-links" id="nav-links">
+            <li><a href="index.html#beranda"  class="nav-link">Beranda</a></li>
+            <li><a href="index.html#sorotan"  class="nav-link">Sorotan</a></li>
+            <li><a href="index.html#artikel"  class="nav-link">Artikel Lengkap</a></li>
+            <li><a href="index.html#kontak"   class="nav-link">Kontak</a></li>
+        </ul>
+        <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+        <label class="theme-switch" title="Toggle Tema">
+            <input type="checkbox" id="theme-toggle-checkbox">
+            <span class="slider"><span class="icon">☀️</span><span class="icon">🌙</span></span>
+        </label>
+    </div>
+</nav>
+<div class="article-page">
+    <div class="article-container fade-section">
+
+        <a href="index.html#artikel" class="btn-back">&larr; Kembali</a>
+
+        <!-- ═══════════════════════════════════════════════════════
+             JUDUL & META — ubah sesuai artikel
+             ═══════════════════════════════════════════════════ -->
+        <h1 id="reader-title">Salam Dasar Sehari-hari</h1>
+        <p class="meta-text">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <span>Kosakata &bull; 20 April 2026</span>
+        </p>
+
+        <!-- ═══════════════════════════════════════════════════════
+             GAMBAR HEADER — ganti src dengan URL gambar kamu
+             ═══════════════════════════════════════════════════ -->
+        <div class="image-placeholder">
+            <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Ilustrasi Salam">
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             ISI ARTIKEL — edit bebas di sini
+             ═══════════════════════════════════════════════════ -->
+        <div class="article-body">
+
+            <p>
+                Saya baru tahu kalau orang Tiongkok jarang bilang <strong>&ldquo;N&#464; h&#462;o ma?&rdquo;</strong>
+                (Apa kabar?) kepada teman dekat. Ternyata ada banyak salam lain yang lebih
+                natural dan sering digunakan sehari-hari!
+            </p>
+
+            <h3>Salam yang Wajib Diketahui</h3>
+
+            <ul>
+                <li><strong>N&#464; h&#462;o (&#20320;&#22909;)</strong> &mdash; Halo (formal, ke orang baru).</li>
+                <li><strong>N&#464; ch&#299; le ma? (&#20320;&#21507;&#20102;&#21527;?)</strong> &mdash; Sudah makan? (sapaan kasual).</li>
+                <li><strong>Z&#462;o (&#26089;)</strong> &mdash; Pagi! (singkat dari Z&#462;o sh&#224;ng h&#462;o).</li>
+                <li><strong>Zu&#236;j&#236;n z&#283;nmey&#224;ng? (&#26368;&#36817;&#24590;&#20040;&#26679;?)</strong> &mdash; Bagaimana kabar belakangan ini?</li>
+                <li><strong>B&#224;i b&#224;i (&#25308;&#25308;)</strong> &mdash; Bye-bye!</li>
+            </ul>
+
+            <h3>Budaya di Balik Salam</h3>
+
+            <p>
+                &ldquo;N&#464; ch&#299; le ma?&rdquo; secara harfiah berarti &ldquo;Apakah kamu sudah makan?&rdquo; &mdash;
+                ini menunjukkan betapa sentralnya budaya makanan dalam kehidupan masyarakat
+                Tiongkok. Ini bukan pertanyaan yang butuh jawaban rinci; ini hanyalah cara
+                hangat untuk menyapa, mirip &ldquo;Apa kabar?&rdquo; dalam bahasa Indonesia.
+            </p>
+
+            <p>
+                Mulai sekarang, saya akan mencoba menyapa teman online saya dengan pertanyaan
+                soal makanan. Semoga tidak dianggap aneh!
+            </p>
+
+        </div>
+        <!-- ═══════════════════════════════════════════════════════
+             AKHIR ISI ARTIKEL
+             ═══════════════════════════════════════════════════ -->
+
+        <hr class="divider">
+
+        <h3 class="related-title">Lanjut Membaca</h3>
+        <div class="card-grid" id="related-container"></div>
+
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2026 MandaNotes. Dibuat dengan 💙 dan semangat belajar.</p>
+</footer>
+<button id="scrollTopBtn" title="Kembali ke atas">&#8593;</button>
+
+
+    <script>
+        // ── SVG Icons ──
+        const svgRocket    = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>`;
+        const svgAlphabet  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg>`;
+        const svgWave      = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
+        const svgPen       = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>`;
+        const svgHandshake = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
+
+        // ── Data artikel (untuk kartu "Lanjut Membaca") ──
+        // Sinkronkan dengan data di index.html jika ada perubahan
+        const articles = [
+            { id:1, title:"Perkenalan: Mengapa Belajar Mandarin?", tag:"Jurnal",      icon:svgRocket,    category:"CATATAN AWAL", summary:"Alasan saya memulai perjalanan nekat belajar bahasa Mandarin secara otodidak dari nol.",              file:"artikel-1.html" },
+            { id:2, title:"Pinyin: Kunci Membaca Bahasa Mandarin", tag:"Tata Bahasa", icon:svgAlphabet,  category:"TATA BAHASA",  summary:"Memahami sistem romanisasi Pinyin dan betapa pentingnya menguasai pelafalan awal.",             file:"artikel-2.html" },
+            { id:3, title:"Misteri 4 Nada (Tones) Mandarin",       tag:"Pelafalan",  icon:svgWave,      category:"PELAFALAN",    summary:"Beda nada, beda makna. Pengalaman saya berlatih 4 nada dasar yang sering bikin salah paham.", file:"artikel-3.html" },
+            { id:4, title:"Menulis Hanzi Pertama Saya",             tag:"Menulis",    icon:svgPen,       category:"MENULIS",      summary:"Coretan pertama saya menulis karakter Hanzi. Ternyata ada aturan urutan garisnya!",          file:"artikel-4.html" },
+            { id:5, title:"Salam Dasar Sehari-hari",                tag:"Kosakata",   icon:svgHandshake, category:"KOSAKATA",     summary:"Selain Ni Hao, apalagi salam yang sering diucapkan orang Tiongkok asli?",                    file:"artikel-5.html" },
+        ];
+
+        function createCard(a) {
+            return `<a class="card" href="${a.file}">
+                <div class="card-cover">
+                    <span class="card-tag-floating">${a.tag}</span>
+                    <div class="card-cover-icon">${a.icon}</div>
+                </div>
+                <div class="card-body">
+                    <span class="card-category">${a.category}</span>
+                    <h3>${a.title}</h3>
+                    <p>${a.summary}</p>
+                    <div class="card-action">Baca Artikel &rarr;</div>
+                </div>
+            </a>`;
+        }
+
+        function renderRelated(currentId) {
+            const related = articles.filter(a => a.id !== currentId).sort(() => 0.5 - Math.random()).slice(0, 2);
+            document.getElementById('related-container').innerHTML = related.map(createCard).join('');
+        }
+
+        // ── Dark mode ──
+        const cb = document.getElementById('theme-toggle-checkbox');
+        if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); cb.checked = true; }
+        cb.addEventListener('change', e => {
+            document.body.classList.toggle('dark-mode', e.target.checked);
+            localStorage.setItem('theme', e.target.checked ? 'dark' : 'light');
+        });
+
+        // ── Hamburger ──
+        const hamburger = document.getElementById('hamburger');
+        const navMenu   = document.getElementById('nav-links');
+        hamburger.addEventListener('click', () => { navMenu.classList.toggle('active'); hamburger.classList.toggle('toggle'); });
+        document.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => { navMenu.classList.remove('active'); hamburger.classList.remove('toggle'); }));
+
+        // ── Scroll: progress + tombol ke atas ──
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', () => {
+            const s = document.documentElement.scrollTop;
+            const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            if (window.innerWidth <= 768) document.getElementById('scroll-progress').style.width = (s / h * 100) + '%';
+            scrollTopBtn.classList.toggle('show', s > 300);
+        });
+        scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // ── Fade-in ──
+        document.querySelectorAll('.fade-section').forEach(el => {
+            new IntersectionObserver(([e]) => { if (e.isIntersecting) e.target.classList.add('visible'); }, { threshold: 0.15 }).observe(el);
+        });
+    </script>
+<script>
+    // Ganti angka berikut sesuai id artikel ini
+    renderRelated(5);
+</script>
+</body>
+</html>

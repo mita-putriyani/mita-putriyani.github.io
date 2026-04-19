@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoltLean | Jurnal Belajar & Branding</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables & Theme */
+        :root {
+            --bg-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-color: #10b981;
+            --accent-hover: #059669;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            --glow-color: rgba(16, 185, 129, 0);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-color: #34d399;
+            --accent-hover: #10b981;
+            --border-color: #334155;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            --glow-color: rgba(52, 211, 153, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; scroll-behavior: smooth; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+
+        .progress-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: transparent; z-index: 1002; }
+        .progress-bar { height: 100%; background: var(--accent-color); width: 0%; transition: width 0.1s ease-out; box-shadow: 0 0 10px var(--glow-color); }
+
+        .reveal { opacity: 0; transform: translateY(40px) scale(0.95); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0) scale(1); }
+
+        #backToTop {
+            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+            background: var(--accent-color); color: #0f172a; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 1.2rem;
+            cursor: pointer; box-shadow: 0 4px 15px var(--glow-color); z-index: 999;
+            opacity: 0; transform: translateY(100px) rotate(180deg); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none;
+        }
+        #backToTop.visible { opacity: 1; transform: translateY(0) rotate(0deg); pointer-events: auto; }
+        #backToTop:hover { transform: translateY(-5px) scale(1.1); background: var(--accent-hover); box-shadow: 0 8px 25px var(--glow-color); }
+
+        /* ─── NAVBAR ─── */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: var(--surface-color); border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 5%;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--accent-color); cursor: pointer; }
+        .logo i { color: #f59e0b; }
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { font-weight: 600; color: var(--text-muted); transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--accent-color); }
+        .nav-actions { display: flex; align-items: center; gap: 15px; }
+
+        /* Nav state untuk artikel view */
+        .nav-links.article-mode a { pointer-events: auto; cursor: pointer; }
+        .nav-links.article-mode a:hover { color: var(--accent-color); }
+
+        .theme-switch { position: relative; width: 64px; height: 32px; background: var(--border-color); border-radius: 30px; cursor: pointer; display: flex; align-items: center; padding: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        .theme-slider { width: 24px; height: 24px; background: var(--surface-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .theme-slider i { font-size: 12px; color: #f59e0b; }
+        [data-theme="dark"] .theme-slider { transform: translateX(32px); background: #3b82f6; }
+        [data-theme="dark"] .theme-slider i { color: #fff; }
+        .hamburger { display: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
+
+        /* ─── CONTAINER & SPACING ─── */
+        .container {
+            max-width: 1100px;
+            margin: 90px auto 50px;
+            padding: 0 60px;
+        }
+        .scroll-section { scroll-margin-top: 100px; margin-bottom: 80px; }
+
+        /* ─── HERO ─── */
+        .hero {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 60px 20px 80px; min-height: 70vh;
+        }
+        .hero-badge { border: 1px solid var(--accent-color); color: var(--accent-color); padding: 8px 24px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; margin-bottom: 30px; background: rgba(16, 185, 129, 0.05); letter-spacing: 0.5px; }
+        .hero h1 { font-size: 4rem; margin-bottom: 25px; line-height: 1.2; font-weight: 700; letter-spacing: -1px; }
+        /* Kunci tinggi baris typing agar tidak bergeser saat teks berubah */
+        .hero h1 .typing-line { display: block; min-height: 1.25em; }
+        .hero h1 .highlight { color: var(--accent-color); text-shadow: 0 0 25px var(--glow-color); }
+        .typing-cursor { color: var(--accent-color); font-weight: 300; animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .hero-desc { color: var(--text-muted); font-size: 1.15rem; max-width: 700px; margin-bottom: 40px; line-height: 1.7; }
+        .hero-btn { background: var(--accent-color); color: #0f172a; padding: 14px 32px; border-radius: 10px; font-weight: 700; font-size: 1rem; box-shadow: 0 4px 20px var(--glow-color); transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .hero-btn:hover { transform: translateY(-3px); background: var(--accent-hover); box-shadow: 0 6px 25px var(--glow-color); }
+
+        .section-title { font-size: 1.8rem; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; justify-content: flex-start; text-align: left; }
+        .filter-group { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; justify-content: flex-start; }
+        #contact .section-title { justify-content: center; text-align: center; }
+
+        .icon-fire { color: #f59e0b; filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.5)); font-size: 1.9rem; }
+        .icon-book { color: var(--accent-color); filter: drop-shadow(0 0 8px var(--glow-color)); font-size: 1.9rem; }
+        .icon-envelope { color: #3b82f6; filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5)); }
+
+        .featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .featured-card { background: var(--surface-color); border-radius: 15px; border: 1px solid var(--border-color); overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; position: relative; box-shadow: var(--card-shadow); }
+        .featured-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .featured-img { width: 100%; height: 180px; object-fit: cover; }
+        .featured-content { padding: 20px; }
+        .badge { background: var(--accent-color); color: #0f172a; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; margin-bottom: 10px; display: inline-block; }
+        
+        .filter-btn { background: var(--surface-color); color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px 20px; border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .filter-btn:hover { background: var(--border-color); color: var(--text-main); }
+        .filter-btn.active { background: var(--accent-color); color: #0f172a; border-color: var(--accent-color); box-shadow: 0 4px 15px var(--glow-color); }
+
+        .blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        .card { background: var(--surface-color); border-radius: 15px; border: 1px solid var(--border-color); overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-5px); box-shadow: var(--card-shadow); }
+        .card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
+        .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-body h3 { margin: 10px 0; font-size: 1.2rem; line-height: 1.4; }
+        .card-body p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; flex-grow: 1; }
+        
+        .read-more { font-weight: 600; font-size: 0.9rem; color: var(--accent-color); display: flex; align-items: center; gap: 5px; transition: color 0.2s; }
+        .read-more i { transition: transform 0.3s; }
+        .card:hover .read-more i { transform: translateX(5px); } 
+
+        /* ─── PAGINATION (FIX #4) ─── */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        .page-btn {
+            min-width: 40px; height: 40px; padding: 0 14px;
+            border-radius: 8px; border: 1px solid var(--border-color);
+            background: var(--surface-color); color: var(--text-muted);
+            font-weight: 600; font-size: 0.9rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+            transition: all 0.2s;
+        }
+        .page-btn:hover:not(:disabled) { background: var(--border-color); color: var(--text-main); }
+        .page-btn.active { background: var(--accent-color); color: #0f172a; border-color: var(--accent-color); box-shadow: 0 4px 15px var(--glow-color); }
+        .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .hidden { display: none !important; }
+
+        /* ─── Article View ─── */
+        #article-view { display: none; max-width: 800px; margin: 0 auto; animation: fadeUp 0.5s ease-out; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); cursor: pointer; margin-bottom: 30px; font-weight: 600; padding: 10px 15px; border-radius: 8px; background: var(--surface-color); border: 1px solid var(--border-color); transition: 0.2s; }
+        .back-btn:hover { color: var(--text-main); background: var(--border-color); }
+        .article-header h1 { font-size: 2.5rem; margin: 15px 0; }
+        .article-meta { color: var(--text-muted); margin-bottom: 30px; font-size: 0.95rem; }
+        .article-cover { width: 100%; height: 400px; object-fit: cover; border-radius: 15px; margin-bottom: 30px; }
+        .article-body { font-size: 1.1rem; line-height: 1.8; color: var(--text-main); }
+        .article-body p { margin-bottom: 20px; }
+        .ppt-box { margin-top: 40px; padding: 25px; background: var(--surface-color); border: 2px dashed var(--accent-color); border-radius: 12px; text-align: center; }
+        .download-btn { display: inline-block; background: var(--accent-color); color: #0f172a; padding: 12px 25px; border-radius: 8px; font-weight: 700; margin-top: 15px; transition: 0.2s; }
+
+        /* Loading state */
+        .article-loading { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .article-loading i { font-size: 2rem; margin-bottom: 12px; display: block; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #contact { padding: 60px; background: var(--surface-color); border-radius: 20px; text-align: center; border: 1px solid var(--border-color); }
+        .contact-form { max-width: 500px; margin: 30px auto 0; display: flex; flex-direction: column; gap: 15px; }
+        input, textarea { padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-family: inherit; }
+        input:focus, textarea:focus { outline: none; border-color: var(--accent-color); }
+
+        /* ─── RESPONSIVE (FIX #3) ─── */
+        @media (max-width: 1024px) {
+            .container { padding: 0 40px; }
+            .featured-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 24px; }
+            .section-title { justify-content: center; text-align: center; }
+            .filter-group { justify-content: center; }
+            .progress-container { display: block; }
+            .hamburger { display: block; }
+
+            .nav-links {
+                position: absolute; top: 100%; left: 0; width: 100%;
+                background: var(--surface-color); flex-direction: column;
+                border-bottom: 1px solid var(--border-color);
+                max-height: 0; overflow: hidden;
+                transition: max-height 0.35s ease-in-out, padding 0.35s ease-in-out;
+                padding-top: 0; padding-bottom: 0;
+                clip-path: none;
+            }
+            .nav-links.active {
+                max-height: 300px;
+                padding-top: 20px; padding-bottom: 20px;
+            }
+
+            html, body { overflow-x: hidden; width: 100%; }
+
+            /* Hero: kunci ukuran font & tinggi agar tidak shift */
+            .hero { padding: 40px 0 60px; min-height: auto; }
+            .hero h1 { font-size: 2.2rem; }
+            .hero h1 .typing-line { min-height: 1.3em; }
+            .hero-desc { font-size: 1rem; }
+
+            .featured-grid { grid-template-columns: 1fr; }
+            .blog-grid { grid-template-columns: 1fr; }
+            .article-cover { height: 220px; }
+            .article-header h1 { font-size: 1.8rem; }
+            #contact { padding: 36px 20px; }
+            #backToTop { bottom: 20px; right: 20px; width: 44px; height: 44px; font-size: 1rem; }
+            .card, .featured-card { width: 100%; min-width: 0; }
+            .page-btn { min-width: 36px; height: 36px; font-size: 0.85rem; padding: 0 10px; }
+        }
+
+        @media (max-width: 400px) {
+            .hero h1 { font-size: 1.8rem; }
+            .container { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="progress-container">
+        <div class="progress-bar" id="scrollProgress"></div>
+    </div>
+
+    <div id="backToTop" onclick="scrollToTop()" title="Kembali ke Atas">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <nav>
+        <div class="logo" onclick="showHome()"><i class="fas fa-bolt"></i> VoltLean</div>
+        
+        <!-- FIX #1: nav-links selalu aktif, navigasi dikontrol via JS -->
+        <div class="nav-links" id="navLinks">
+            <a href="#home"         class="nav-item" data-target="home"         onclick="handleNavClick(event, 'home')">Beranda</a>
+            <a href="#featured"     class="nav-item" data-target="featured"     onclick="handleNavClick(event, 'featured')">Sorotan</a>
+            <a href="#all-articles" class="nav-item" data-target="all-articles" onclick="handleNavClick(event, 'all-articles')">Artikel</a>
+            <a href="#contact"      class="nav-item" data-target="contact"      onclick="handleNavClick(event, 'contact')">Kontak</a>
+        </div>
+
+        <div class="nav-actions">
+            <div class="theme-switch" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                <div class="theme-slider" id="theme-icon">
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+            <div class="hamburger" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="home-view">
+            
+            <header class="hero scroll-section reveal" id="home">
+                <div class="hero-badge">Curious Mind | Tech Enthusiast</div>
+                <h1>Mengisi Daya <span class="typing-line"><span class="highlight" id="typing-text"></span><span class="typing-cursor">|</span></span></h1>
+                <p class="hero-desc">Selamat datang di jurnal pribadi saya. Tempat di mana saya mendokumentasikan perjalanan saya memahami teknologi baterai, dari kimia dasar hingga sistem manajemen modern.<br>Selalu ada ruang untuk belajar.</p>
+                <a href="#featured" class="hero-btn" onclick="event.preventDefault(); scrollToSection('featured')">
+                    Mulai Membaca <i class="fas fa-arrow-down" style="font-size: 0.9em; margin-left: 3px;"></i>
+                </a>
+            </header>
+
+            <section id="featured" class="scroll-section reveal">
+                <h2 class="section-title"><i class="fa-solid fa-fire-flame-curved icon-fire"></i> Sorotan</h2>
+                <div class="featured-grid" id="featured-posts"></div>
+            </section>
+
+            <section id="all-articles" class="scroll-section reveal">
+                <h2 class="section-title"><i class="fa-solid fa-book-bookmark icon-book"></i>Artikel</h2>
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="setFilter('Semua')">Semua</button>
+                    <button class="filter-btn" onclick="setFilter('Baterai')">Baterai</button>
+                    <button class="filter-btn" onclick="setFilter('Lean')">Lean Manufacturing</button>
+                </div>
+                <div class="blog-grid" id="all-posts"></div>
+
+                <!-- FIX #4: Pagination -->
+                <div class="pagination" id="pagination"></div>
+            </section>
+
+            <section id="contact" class="scroll-section reveal">
+                <h2 class="section-title"><i class="fa-solid fa-paper-plane icon-envelope"></i> Mari Berdiskusi</h2>
+                <p style="color: var(--text-muted); margin-top: -10px;">Tertarik untuk kolaborasi proyek atau diskusi tentang baterai? Kirim pesan!</p>
+                <form class="contact-form" onsubmit="event.preventDefault(); alert('Pesan berhasil dikirim!');">
+                    <input type="text" placeholder="Nama Anda" required>
+                    <input type="email" placeholder="Email Anda" required>
+                    <textarea rows="4" placeholder="Pesan atau pertanyaan..." required></textarea>
+                    <button type="submit" class="btn-primary" style="border-radius: 8px; background: var(--accent-color); color: #0f172a; border: none; padding: 12px 30px; font-weight: 700; cursor: pointer; font-size: 1rem;">Kirim Pesan <i class="fas fa-paper-plane" style="margin-left:5px;"></i></button>
+                </form>
+            </section>
+        </div>
+
+        <div id="article-view">
+            <button class="back-btn" onclick="goBackToJournal()"><i class="fas fa-arrow-left"></i> Kembali</button>
+            <article id="article-content"></article>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 50px;" class="reveal">
+        <p>&copy; 2026 VoltLean Project. <i>Lifelong Learner.</i></p>
+    </footer>
+
+    <script>
+        // ─────────────────────────────────────────────────────────────────────────
+        // DATA ARTIKEL
+        // ─────────────────────────────────────────────────────────────────────────
+        const postsData = [
+            {
+                id: 1,
+                featured: true,
+                category: "Baterai",
+                image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80",
+                title: "Masa Depan Solid-State Battery",
+                excerpt: "Mengapa industri mulai beralih dari elektrolit cair ke padat demi keamanan.",
+                file: "artikel-battery/solid-state-battery.html"
+            },
+            {
+                id: 2,
+                featured: true,
+                category: "Lean",
+                image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80",
+                title: "Implementasi 5S di Lab Baterai",
+                excerpt: "Bagaimana metodologi 5S dapat mengurangi kontaminasi pada perakitan sel.",
+                file: "artikel-battery/implementasi-5s.html"
+            },
+            {
+                id: 3,
+                featured: true,
+                category: "Baterai",
+                image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80",
+                title: "Memahami Battery Management System",
+                excerpt: "Otak di balik keamanan paket baterai lithium dan perhitungan SOH.",
+                file: "artikel-battery/battery-management-system.html"
+            },
+            {
+                id: 4,
+                featured: false,
+                category: "Lean",
+                image: "img-battery/Profile.png",
+                title: "Kaizen: Perbaikan Terus Menerus",
+                excerpt: "Membangun budaya inovasi harian di lantai produksi.",
+                file: "artikel-battery/kaizen.html"
+            },
+            {
+                id: 5,
+                featured: false,
+                category: "Baterai",
+                image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80",
+                title: "Daur Ulang Baterai EV",
+                excerpt: "Proses hidrometalurgi untuk menyelamatkan nikel dan kobalt.",
+                file: "artikel-battery/daur-ulang-baterai.html"
+            },
+            {
+                id: 6,
+                featured: false,
+                category: "Lean",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80",
+                title: "Value Stream Mapping (VSM)",
+                excerpt: "Cara memetakan dan menghilangkan pemborosan (waste) dalam proses.",
+                file: "artikel-battery/value-stream-mapping.html"
+            },
+            {
+                id: 7,
+                featured: false,
+                category: "Baterai",
+                image: "https://images.unsplash.com/photo-1565800489013-c64859d0c2d5?w=600&q=80",
+                title: "Degradasi pada Lithium-Ion",
+                excerpt: "Penyebab utama baterai kehilangan kapasitasnya seiring waktu.",
+                file: "artikel-battery/degradasi-lithium-ion.html"
+            }
+        ];
+
+        // ─── Intersection Observer untuk Animasi Scroll ───
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+        function observeElements() {
+            document.querySelectorAll('.reveal').forEach(el => { revealObserver.observe(el); });
+        }
+
+        // ─── Typing Effect ───
+        const wordsToType = ["Pengetahuan.", "Inovasi.", "Masa Depan."];
+        let wordIndex = 0; let charIndex = 0; let isDeleting = false;
+        const typingElement = document.getElementById("typing-text");
+
+        function typeWriter() {
+            const currentWord = wordsToType[wordIndex];
+            if (isDeleting) {
+                typingElement.textContent = currentWord.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingElement.textContent = currentWord.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            let typingSpeed = isDeleting ? 75 : 150;
+            if (!isDeleting && charIndex === currentWord.length) {
+                typingSpeed = 2000; isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false; wordIndex = (wordIndex + 1) % wordsToType.length; typingSpeed = 500;
+            }
+            setTimeout(typeWriter, typingSpeed);
+        }
+        
+        // ─── Scroll Logic ───
+        const sections = document.querySelectorAll('.scroll-section');
+        const navItems = document.querySelectorAll('.nav-item');
+        const progressBar = document.getElementById('scrollProgress');
+        const backToTopBtn = document.getElementById('backToTop');
+
+        // State: apakah sedang di artikel view
+        let isArticleView = false;
+
+        window.addEventListener('scroll', () => {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            if (window.innerWidth <= 768) {
+                progressBar.style.width = ((winScroll / height) * 100) + "%";
+            }
+            if (winScroll > 300) { backToTopBtn.classList.add('visible'); }
+            else { backToTopBtn.classList.remove('visible'); }
+
+            // Update active nav hanya saat di home view
+            if (!isArticleView) {
+                let current = '';
+                sections.forEach(section => {
+                    if (pageYOffset >= (section.offsetTop - 150)) { current = section.getAttribute('id'); }
+                });
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('href') === `#${current}`) { item.classList.add('active'); }
+                });
+            }
+        });
+
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ─── FIX #1: Navigasi saat article view aktif ───
+        function handleNavClick(event, target) {
+            event.preventDefault();
+            closeMenu();
+            if (isArticleView) {
+                // Kembali ke home dulu, lalu scroll ke section
+                showHome();
+                setTimeout(() => {
+                    if (target === 'home') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        scrollToSection(target);
+                    }
+                }, 50);
+            } else {
+                if (target === 'home') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    scrollToSection(target);
+                }
+            }
+        }
+
+        // ─── Render Featured ───
+        function renderFeatured() {
+            const featuredContainer = document.getElementById('featured-posts');
+            const featuredPosts = postsData.filter(post => post.featured).slice(0, 3);
+            featuredContainer.innerHTML = featuredPosts.map(post => `
+                <div class="featured-card reveal" onclick="openArticle(${post.id})">
+                    <img src="${post.image}" class="featured-img" alt="${post.title}">
+                    <div class="featured-content">
+                        <span class="badge" style="background: ${post.category === 'Lean' ? '#3b82f6' : 'var(--accent-color)'}; color: #0f172a;">${post.category}</span>
+                        <h3 style="margin-bottom: 8px;">${post.title}</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">${post.excerpt}</p>
+                        <div class="read-more" style="margin-top: 15px;">Baca Artikel <i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            `).join('');
+            observeElements();
+        }
+
+        const POSTS_PER_PAGE = 6;
+        let currentFilter = 'Semua';
+        let currentPage = 1;
+
+        function getFilteredPosts() {
+            let list = postsData; // semua artikel, termasuk featured
+            if (currentFilter !== 'Semua') {
+                list = list.filter(post => post.category === currentFilter);
+            }
+            return list;
+        }
+
+        function renderAllPosts() {
+            const container = document.getElementById('all-posts');
+            const filtered = getFilteredPosts();
+            const totalPages = Math.ceil(filtered.length / POSTS_PER_PAGE);
+
+            // Pastikan currentPage tidak melebihi total halaman
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+
+            const start = (currentPage - 1) * POSTS_PER_PAGE;
+            const pagePosts = filtered.slice(start, start + POSTS_PER_PAGE);
+
+            container.innerHTML = pagePosts.map(post => `
+                <div class="card reveal" onclick="openArticle(${post.id})">
+                    <img src="${post.image}" alt="${post.title}">
+                    <div class="card-body">
+                        <span class="badge" style="width: fit-content; background: ${post.category === 'Lean' ? '#3b82f6' : 'var(--accent-color)'}; color: #0f172a;">${post.category}</span>
+                        <h3>${post.title}</h3>
+                        <p>${post.excerpt}</p>
+                        <div class="read-more">Baca Artikel <i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </div>
+            `).join('');
+
+            renderPagination(totalPages);
+            observeElements();
+        }
+
+        function renderPagination(totalPages) {
+            const pag = document.getElementById('pagination');
+            if (totalPages <= 1) { pag.innerHTML = ''; return; }
+
+            let html = '';
+
+            // Tombol Prev
+            html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                        <i class="fas fa-chevron-left" style="font-size:0.75rem;"></i>&nbsp;Prev
+                     </button>`;
+
+            // Nomor halaman — tampilkan max 5 halaman dengan ellipsis jika banyak
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+
+            // Tombol Next
+            html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                        Next&nbsp;<i class="fas fa-chevron-right" style="font-size:0.75rem;"></i>
+                     </button>`;
+
+            pag.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            const filtered = getFilteredPosts();
+            const totalPages = Math.ceil(filtered.length / POSTS_PER_PAGE);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderAllPosts();
+            // Scroll ke atas section artikel
+            document.getElementById('all-articles').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setFilter(category) {
+            currentFilter = category;
+            currentPage = 1;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                const label = btn.innerText.trim();
+                if (
+                    (category === 'Semua' && label === 'Semua') ||
+                    (category === 'Baterai' && label === 'Baterai') ||
+                    (category === 'Lean' && label.includes('Lean'))
+                ) {
+                    btn.classList.add('active');
+                }
+            });
+            renderAllPosts();
+        }
+
+        // ─── Open Article — fetch dari file terpisah ───
+        async function openArticle(id) {
+            const post = postsData.find(p => p.id === id);
+            if (!post) return;
+
+            isArticleView = true;
+
+            document.getElementById('home-view').style.display = 'none';
+            document.getElementById('article-view').style.display = 'block';
+            document.getElementById('article-content').innerHTML = `
+                <div class="article-loading">
+                    <i class="fas fa-circle-notch"></i>
+                    Memuat artikel...
+                </div>
+            `;
+            window.scrollTo(0, 0);
+
+            // Hilangkan active dari nav saat buka artikel
+            navItems.forEach(item => item.classList.remove('active'));
+
+            try {
+                const res = await fetch(post.file);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const html = await res.text();
+                document.getElementById('article-content').innerHTML = html;
+            } catch (err) {
+                document.getElementById('article-content').innerHTML = `
+                    <div class="article-header">
+                        <span class="badge" style="background:var(--accent-color);color:#0f172a;">${post.category}</span>
+                        <h1>${post.title}</h1>
+                        <div class="article-meta"><i class="far fa-calendar"></i> 2026</div>
+                    </div>
+                    <img src="${post.image}" class="article-cover" alt="${post.title}">
+                    <div class="article-body">
+                        <p>${post.excerpt}</p>
+                        <div class="ppt-box" style="border-color:var(--border-color);">
+                            <i class="fas fa-file-code fa-2x" style="color:var(--text-muted);"></i>
+                            <h3 style="margin:10px 0;">File belum tersedia</h3>
+                            <p>Buat file <code>${post.file}</code> menggunakan template yang sudah disediakan.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showHome() {
+            isArticleView = false;
+            document.getElementById('home-view').style.display = 'block';
+            document.getElementById('article-view').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.dispatchEvent(new Event('scroll'));
+        }
+
+        function goBackToJournal() {
+            isArticleView = false;
+            document.getElementById('home-view').style.display = 'block';
+            document.getElementById('article-view').style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('all-articles').scrollIntoView({ behavior: 'smooth' });
+                window.dispatchEvent(new Event('scroll'));
+            }, 10);
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.querySelector('.theme-slider i');
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                icon.className = 'fas fa-sun';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-moon';
+            }
+        }
+
+        function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }
+        function closeMenu() { document.getElementById('navLinks').classList.remove('active'); }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFeatured();
+            renderAllPosts();
+            typeWriter();
+            observeElements();
+        });
+    </script>
+</body>
+</html>
